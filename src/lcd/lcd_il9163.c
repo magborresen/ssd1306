@@ -419,6 +419,22 @@ void    st7735_128x160_init()
     ssd1306_configureSpiDisplay2(s_oled128x160_initData, sizeof(s_oled128x160_initData));
 }
 
+void    st7735_80x160_init()
+{
+    ssd1306_lcd.type = LCD_TYPE_SSD1331;
+    ssd1306_lcd.width = 80;
+    ssd1306_lcd.height = 160;
+    s_rgb_bit = 0b00000000; // set RGB mode mapping
+    ssd1306_lcd.set_block = st7735_setBlock;
+    ssd1306_lcd.next_page = il9163_nextPage;
+    ssd1306_lcd.send_pixels1  = il9163_sendPixels;
+    ssd1306_lcd.send_pixels_buffer1 = il9163_sendPixelsBuffer;
+    ssd1306_lcd.send_pixels8 = il9163_sendPixel8;
+    ssd1306_lcd.send_pixels16 = il9163_sendPixel16;
+    ssd1306_lcd.set_mode = st7735_setMode;
+    ssd1306_configureSpiDisplay2(s_oled128x160_initData, sizeof(s_oled128x160_initData));
+}
+
 void   st7735_128x160_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin)
 {
     if (rstPin >=0)
@@ -431,4 +447,18 @@ void   st7735_128x160_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin)
     s_ssd1306_spi_clock = 8000000;
     ssd1306_spiInit(cesPin, dcPin);
     st7735_128x160_init();
+}
+
+void   st7735_80x160_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin)
+{
+    if (rstPin >=0)
+    {
+        ssd1306_resetController( rstPin, 20 );
+        /* Give 120ms display to initialize */
+        delay(120);
+    }
+    /* ssd1351 cannot work faster than at 4MHz per datasheet */
+    s_ssd1306_spi_clock = 8000000;
+    ssd1306_spiInit(cesPin, dcPin);
+    st7735_80x160_init();
 }
